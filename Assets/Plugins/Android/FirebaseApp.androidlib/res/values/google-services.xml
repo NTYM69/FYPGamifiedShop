@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@string/firebase_database_url,@string/gcm_defaultSenderId,@string/google_storage_bucket,@string/project_id,@string/google_api_key,@string/google_crash_reporting_api_key,@string/google_app_id">
+  <string name="firebase_database_url" translatable="false">https://fir-gamifiedshoppingunity-default-rtdb.asia-southeast1.firebasedatabase.app</string>
+  <string name="gcm_defaultSenderId" translatable="false">566928684848</string>
+  <string name="google_storage_bucket" translatable="false">fir-gamifiedshoppingunity.appspot.com</string>
+  <string name="project_id" translatable="false">fir-gamifiedshoppingunity</string>
+  <string name="google_api_key" translatable="false">AIzaSyBUyS1wFDp7k2xH88MigwUfWXv6MwDk0Fw</string>
+  <string name="google_crash_reporting_api_key" translatable="false">AIzaSyBUyS1wFDp7k2xH88MigwUfWXv6MwDk0Fw</string>
+  <string name="google_app_id" translatable="false">1:566928684848:android:5c8d0e0904546f70207af5</string>
+</resources>
