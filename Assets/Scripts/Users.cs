@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class GameData 
+public class Users
 {
     public string username;
     public int tickets;
@@ -13,7 +13,7 @@ public class GameData
     public DateTime lastLogin = DateTime.MinValue;
     public List<string> vouchers;
 
-   public GameData(string username = "", int tickets = 0, int spinTickets = 0, int dailyRedeemed = 0, int dailyEarned = 0, DateTime? lastLogin = null, List<string> vouchers = null){
+   public Users(string username = "", int tickets = 0, int spinTickets = 0, int dailyRedeemed = 0, int dailyEarned = 0, DateTime? lastLogin = null, List<string> vouchers = null){
         this.username = username;
         this.tickets = tickets;
         this.spinTickets = spinTickets;
@@ -21,4 +21,9 @@ public class GameData
         this.lastLogin = lastLogin ?? DateTime.MinValue;
         this.vouchers = vouchers ?? new List<string>();
    }
+
+    public string UsersToJson()
+    {
+        return JsonUtility.ToJson(this);
+    }
 }
