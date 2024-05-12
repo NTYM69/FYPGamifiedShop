@@ -2009,11 +2009,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1971496015}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1f326ee6c3b806b45a3493e544869b4d, type: 3}
+  m_Script: {fileID: 11500000, guid: cbeb7914dc20a2e43a1a0830955d84cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ProfileUsername: {fileID: 1891971192}
-  TicketNo: {fileID: 211241652}
+  ProfileUsername: {fileID: 0}
+  TicketNo: {fileID: 0}
 --- !u!4 &1971496017
 Transform:
   m_ObjectHideFlags: 0
