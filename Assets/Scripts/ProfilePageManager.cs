@@ -17,9 +17,9 @@ public class ProfilePageManager : MonoBehaviour
         DisplayUserName(uuid);
     }
 
-    private async void DisplayUserName(string uuidDUN)
+    private async void DisplayUserName(string uuid)
     {
-        Users users = await fbMgr.GetUser(uuidDUN);
+        Users users = await fbMgr.GetUser(uuid);
         currentUserName = users.username;
         editUserName.text = currentUserName;
         Debug.Log(currentUserName);

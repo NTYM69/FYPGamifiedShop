@@ -8,7 +8,7 @@ using Firebase;
 using Firebase.Auth;
 using System.Threading.Tasks;
 using Firebase.Extensions;
-// using Firebase.Database;
+using Firebase.Database;
 using System;
 
 public class FirebaseController : MonoBehaviour
@@ -19,13 +19,13 @@ public class FirebaseController : MonoBehaviour
     
     Firebase.Auth.FirebaseAuth auth;
     Firebase.Auth.FirebaseUser user;
-    // DatabaseReference dbRef;
+    DatabaseReference dbRef;
  
 
     void Start()
     {
         auth = FirebaseAuth.DefaultInstance;
-        // dbRef = FirebaseDatabase.DefaultInstance.RootReference;
+        dbRef = FirebaseDatabase.DefaultInstance.RootReference;
     }
 
      public void LoginUser()
@@ -104,7 +104,7 @@ public class FirebaseController : MonoBehaviour
                 Debug.LogFormat("Firebase user created successfully: {0} ({1})",
                     result.User.DisplayName, result.User.UserId);
                 
-                // InitializeGameData(result.User.UserId);
+                InitializeGameData(result.User.UserId);
 
                 SceneManager.LoadScene(3);
                
@@ -161,11 +161,11 @@ public class FirebaseController : MonoBehaviour
 //   auth = null;
 // }
     
-// void InitializeGameData(string userID) {
-//      GameData newGameData = new GameData("NewUser", 0, 0, 0, 0, DateTime.Now, new List<string>());
-//      string json = JsonUtility.ToJson(newGameData);
+void InitializeGameData(string userID) {
+     Users newUser = new Users("NewUser", 0, 0, 0, 0, DateTime.Now, new List<string>());
+     string json = JsonUtility.ToJson(newUser);
 
-//      dbRef.Child("Users").Child(userID).SetRawJsonValueAsync(json);
-// }
+     dbRef.Child("Users").Child(userID).SetRawJsonValueAsync(json);
+}
 
 }

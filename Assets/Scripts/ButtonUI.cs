@@ -27,6 +27,10 @@ public class ButtonUI : MonoBehaviour
         SceneManager.LoadScene(4);
     }
 
+    public void goShopPage() {
+        SceneManager.LoadScene(5);
+    }
+
     public void signOutButton() {
 
         Firebase.Auth.FirebaseAuth auth = Firebase.Auth.FirebaseAuth.DefaultInstance;

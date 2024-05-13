@@ -20,5 +20,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/ProfilePage.unity
     guid: 1493f7c9aec96534d95c7c0a8db7de83
+  - enabled: 1
+    path: Assets/Scenes/ShopPage.unity
+    guid: 6a04e608f33cddc44a39c3498e700d52
   m_configObjects:
     com.unity.adaptiveperformance.simulator.provider_settings: {fileID: 11400000, guid: ce36b767da3cd50478cbffec04315489, type: 2}

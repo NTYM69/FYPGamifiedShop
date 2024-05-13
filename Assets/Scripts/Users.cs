@@ -10,7 +10,7 @@ public class Users
     public int spinTickets;
     public int dailyRedeemed;
     public int dailyEarned;
-    public DateTime lastLogin = DateTime.MinValue;
+    public DateTime lastLogin;
     public List<string> vouchers;
 
    public Users(string username = "", int tickets = 0, int spinTickets = 0, int dailyRedeemed = 0, int dailyEarned = 0, DateTime? lastLogin = null, List<string> vouchers = null){

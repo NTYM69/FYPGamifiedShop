@@ -11,11 +11,13 @@ using System.Threading.Tasks;
 
 public class FirebaseManager : MonoBehaviour
 {
+    // public FirebaseManager fbMgr;
     FirebaseAuth auth;
     DatabaseReference dbRef;
     DatabaseReference dbUsersReference;
 
     public TMP_Text ProfileUsername, TicketNo;
+    private string uuid;
 
     private void Awake()
     {
@@ -26,7 +28,8 @@ public class FirebaseManager : MonoBehaviour
 
     void Start()
     {
-        RetrieveUserData();
+        uuid = GetCurrentUser().UserId;
+        DisplayMainMenuInfo(uuid);
     }
 
 
@@ -35,44 +38,49 @@ public class FirebaseManager : MonoBehaviour
         return auth.CurrentUser;
     }
 
-    public void RetrieveUserData()
+    public async void DisplayMainMenuInfo(string uuid)
     {
-        Firebase.Auth.FirebaseUser currentUser = auth.CurrentUser;
-        if (currentUser != null)
-        {
-            string userId = currentUser.UserId;
+        Users users = await GetUser(uuid);
+        ProfileUsername.text = users.username;
+        TicketNo.text = users.tickets.ToString();
+        // Firebase.Auth.FirebaseUser currentUser = auth.CurrentUser;
+        // if (currentUser != null)
+        // {
+        //     string userId = currentUser.UserId;
 
-            // Create a database reference for the user's data
-            DatabaseReference userRef = dbRef.Child("Users").Child(userId);
+        //     // Create a database reference for the user's data
+        //     DatabaseReference userRef = dbRef.Child("Users").Child(userId);
 
-            // Query playerQuery = dbRef.Child("Users").Child(userId);
+        //     // Query playerQuery = dbRef.Child("Users").Child(userId);
 
-            // Attach a listener to the database reference to read the data
-            userRef.GetValueAsync().ContinueWith(task =>
-            {
-                if (task.IsFaulted)
-                {
-                    Debug.LogError("Failed to retrieve user data: " + task.Exception);
-                    return;
-                }
+        //     // Attach a listener to the database reference to read the data
+        //     userRef.GetValueAsync().ContinueWith(task =>
+        //     {
+        //         if (task.IsFaulted)
+        //         {
+        //             Debug.LogError("Failed to retrieve user data: " + task.Exception);
+        //             return;
+        //         }
 
-                // Parse the retrieved data
-                DataSnapshot dataSnapshot = task.Result;
-                if (dataSnapshot != null && dataSnapshot.Exists)
-                {
-                    // Deserialize the JSON data into a C# object
-                    Users userData = JsonUtility.FromJson<Users>(dataSnapshot.GetRawJsonValue());
+        //         // Parse the retrieved data
+        //         DataSnapshot dataSnapshot = task.Result;
+        //         if (dataSnapshot != null && dataSnapshot.Exists)
+        //         {
+        //             // Deserialize the JSON data into a C# object
+        //             Users userData = JsonUtility.FromJson<Users>(dataSnapshot.GetRawJsonValue());
 
-                    ProfileUsername.text = userData.username;
-                    TicketNo.text = userData.tickets.ToString();
+        //             ProfileUsername.text = userData.username;
+        //             TicketNo.text = userData.tickets.ToString();
 
-                }
-                else
-                {
-                    Debug.LogWarning("User data does not exist.");
-                }
-            });
-        }
+        //         }
+        //         else
+        //         {
+        //             Debug.LogWarning("User data does not exist.");
+        //         }
+        //     });
+        // }
+
+
     }
 
     public async Task<Users> GetUser(string uuid)
