@@ -11,15 +11,15 @@ using System.Threading.Tasks;
 
 public class FirebaseManager : MonoBehaviour
 {
-    // public FirebaseManager fbMgr;
     FirebaseAuth auth;
     DatabaseReference dbRef;
     DatabaseReference dbUsersReference;
 
-    // public TMP_Text ProfileUsername, TicketNo;
+    private string email;
+
     private string uuid;
 
-    private void Awake()
+    void Awake()
     {
         auth = FirebaseAuth.DefaultInstance;
         dbRef = FirebaseDatabase.DefaultInstance.RootReference;
@@ -29,7 +29,6 @@ public class FirebaseManager : MonoBehaviour
     void Start()
     {
         uuid = GetCurrentUser().UserId;
-        // DisplayMainMenuInfo(uuid);
     }
 
 
@@ -38,50 +37,23 @@ public class FirebaseManager : MonoBehaviour
         return auth.CurrentUser;
     }
 
-    // public async void DisplayMainMenuInfo(string uuid)
-    // {
-    //     Users users = await GetUser(uuid);
-    //     ProfileUsername.text = users.username;
-    //     TicketNo.text = users.tickets.ToString();
-        // Firebase.Auth.FirebaseUser currentUser = auth.CurrentUser;
-        // if (currentUser != null)
-        // {
-        //     string userId = currentUser.UserId;
-
-        //     // Create a database reference for the user's data
-        //     DatabaseReference userRef = dbRef.Child("Users").Child(userId);
-
-        //     // Query playerQuery = dbRef.Child("Users").Child(userId);
-
-        //     // Attach a listener to the database reference to read the data
-        //     userRef.GetValueAsync().ContinueWith(task =>
-        //     {
-        //         if (task.IsFaulted)
-        //         {
-        //             Debug.LogError("Failed to retrieve user data: " + task.Exception);
-        //             return;
-        //         }
-
-        //         // Parse the retrieved data
-        //         DataSnapshot dataSnapshot = task.Result;
-        //         if (dataSnapshot != null && dataSnapshot.Exists)
-        //         {
-        //             // Deserialize the JSON data into a C# object
-        //             Users userData = JsonUtility.FromJson<Users>(dataSnapshot.GetRawJsonValue());
-
-        //             ProfileUsername.text = userData.username;
-        //             TicketNo.text = userData.tickets.ToString();
-
-        //         }
-        //         else
-        //         {
-        //             Debug.LogWarning("User data does not exist.");
-        //         }
-        //     });
-        // }
-
-
-    // }
+    public async Task SendPasswordResetEmail(string email)
+    {
+        if (string.IsNullOrEmpty(email))
+        {
+            Debug.LogError("No email provided for password reset.");
+            return;
+        }
+        try
+        {
+            await auth.SendPasswordResetEmailAsync(email);
+            Debug.Log("Password reset email sent successfully.");
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError("SendPasswordResetEmailAsync encountered an error: " + ex);
+        }
+    }
 
     public async Task<Users> GetUser(string uuid)
     {
@@ -96,11 +68,9 @@ public class FirebaseManager : MonoBehaviour
             }
             else if (task.IsCompleted)
             {
-                DataSnapshot ds = task.Result;//path -> playerstats/$uuid
+                DataSnapshot ds = task.Result;
                 if (ds.Child(uuid).Exists)
                 {
-
-                    //path to the datasapshot playerstats/$uuid/<we want this values>
                     users = JsonUtility.FromJson<Users>(ds.Child(uuid).GetRawJsonValue());
 
                     Debug.Log("ds... : " + ds.GetRawJsonValue());
@@ -114,13 +84,7 @@ public class FirebaseManager : MonoBehaviour
 
     public void UpdateUserName(string uuid, string userName)
     {
-        //update only specific properties that we want
-
-        //path: leaderboards/&uuid/username
-        //path: leaderboards/$uuid/totalMoney
-        //path: leaderboards/$uuid/totalTmeSpent
-        //path: leaderboards/$uuid/updatedOn
-        Debug.Log("Where id: " + uuid);
+        Debug.Log("Where id: " + uuid); 
         dbUsersReference.Child(uuid).Child("username").SetValueAsync(userName);
     }
 }
