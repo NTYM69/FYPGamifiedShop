@@ -16,7 +16,7 @@ public class FirebaseManager : MonoBehaviour
     DatabaseReference dbRef;
     DatabaseReference dbUsersReference;
 
-    public TMP_Text ProfileUsername, TicketNo;
+    // public TMP_Text ProfileUsername, TicketNo;
     private string uuid;
 
     private void Awake()
@@ -29,7 +29,7 @@ public class FirebaseManager : MonoBehaviour
     void Start()
     {
         uuid = GetCurrentUser().UserId;
-        DisplayMainMenuInfo(uuid);
+        // DisplayMainMenuInfo(uuid);
     }
 
 
@@ -38,11 +38,11 @@ public class FirebaseManager : MonoBehaviour
         return auth.CurrentUser;
     }
 
-    public async void DisplayMainMenuInfo(string uuid)
-    {
-        Users users = await GetUser(uuid);
-        ProfileUsername.text = users.username;
-        TicketNo.text = users.tickets.ToString();
+    // public async void DisplayMainMenuInfo(string uuid)
+    // {
+    //     Users users = await GetUser(uuid);
+    //     ProfileUsername.text = users.username;
+    //     TicketNo.text = users.tickets.ToString();
         // Firebase.Auth.FirebaseUser currentUser = auth.CurrentUser;
         // if (currentUser != null)
         // {
@@ -81,7 +81,7 @@ public class FirebaseManager : MonoBehaviour
         // }
 
 
-    }
+    // }
 
     public async Task<Users> GetUser(string uuid)
     {
