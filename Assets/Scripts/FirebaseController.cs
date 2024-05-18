@@ -16,16 +16,31 @@ public class FirebaseController : MonoBehaviour
     public TMP_InputField LoginUsernameField, LoginPasswordField, RegUsernameField, RegPasswordField, RegCPasswordField;
     public TMP_Text LoginUsernameError, LoginPasswordError, RegUsernameError, RegPasswordError, RegCPasswordError;
 
-    
+    private Dictionary<TMP_InputField, bool> inputFieldVisibility = new Dictionary<TMP_InputField, bool>();
+
     Firebase.Auth.FirebaseAuth auth;
     Firebase.Auth.FirebaseUser user;
     DatabaseReference dbRef;
  
-
-    void Start()
+    void Awake() 
     {
         auth = FirebaseAuth.DefaultInstance;
         dbRef = FirebaseDatabase.DefaultInstance.RootReference;
+    }
+    void Start()
+    {
+        if (LoginPasswordField != null)
+        {
+            LoginPasswordField.contentType = TMPro.TMP_InputField.ContentType.Password;
+        }
+        if (RegPasswordField != null)
+        {
+            RegPasswordField.contentType = TMPro.TMP_InputField.ContentType.Password;
+        }
+        if (RegCPasswordField != null)
+        {
+            RegCPasswordField.contentType = TMPro.TMP_InputField.ContentType.Password;
+        }
     }
 
      public void LoginUser()
@@ -133,39 +148,30 @@ public class FirebaseController : MonoBehaviour
         });
     }
 
-//     void InitializeFirebase() {
-//   auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
-//   auth.StateChanged += AuthStateChanged;
-//   AuthStateChanged(this, null);
-// }
+     public void ShowPasswordButton(TMP_InputField inputField) 
+    {
+        if (inputFieldVisibility.ContainsKey(inputField))
+        {
+            // Toggle the current visibility state
+            bool isHidden = inputFieldVisibility[inputField];
+            inputField.contentType = isHidden ? TMP_InputField.ContentType.Standard : TMP_InputField.ContentType.Password;
+            inputFieldVisibility[inputField] = !isHidden;
+        }
+        else
+        {
+            // If the input field is not in the dictionary, assume it is initially hidden
+            inputField.contentType = TMP_InputField.ContentType.Standard;
+            inputFieldVisibility[inputField] = false;
+        }
 
-// void AuthStateChanged(object sender, System.EventArgs eventArgs) {
-//   if (auth.CurrentUser != user) {
-//     bool signedIn = user != auth.CurrentUser && auth.CurrentUser != null
-//         && auth.CurrentUser.IsValid();
-//     if (!signedIn && user != null) {
-//       Debug.Log("Signed out " + user.UserId);
-//     }
-//     user = auth.CurrentUser;
-//     if (signedIn) {
-//       Debug.Log("Signed in " + user.UserId);
-//     //   displayName = user.DisplayName ?? "";
-//     //   emailAddress = user.Email ?? "";
-//     //   photoUrl = user.PhotoUrl ?? "";
-//     }
-//   }
-// }
-
-// void OnDestroy() {
-//   auth.StateChanged -= AuthStateChanged;
-//   auth = null;
-// }
+        inputField.ForceLabelUpdate();
+    }
     
 void InitializeGameData(string userID) {
-     Users newUser = new Users("NewUser", 0, 0, 0, 0, DateTime.Now, new List<string>());
-     string json = JsonUtility.ToJson(newUser);
-
-     dbRef.Child("Users").Child(userID).SetRawJsonValueAsync(json);
+    Users newUser = new Users("NewUser", 0, 0, 0, 0, DateTime.Now, DateTime.MinValue, new List<string>());
+    string json = JsonUtility.ToJson(newUser);
+    newUser.lastRedeemed = DateTime.MinValue.ToString("o");
+    dbRef.Child("Users").Child(userID).SetRawJsonValueAsync(json);
 }
 
 }

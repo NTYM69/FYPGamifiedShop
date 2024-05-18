@@ -10,8 +10,10 @@ public class MainMenuManager : MonoBehaviour
     private string uuid;
     void Start()
     {
+        Application.targetFrameRate = ((int)Screen.currentResolution.refreshRateRatio.value);
         uuid = fbMgr.GetCurrentUser().UserId;
         DisplayMainMenuInfo(uuid);
+        CheckLogin();
     }
     private async void DisplayMainMenuInfo(string uuid) 
     {
@@ -19,6 +21,12 @@ public class MainMenuManager : MonoBehaviour
         ProfileUsername.text = users.username;
         TicketNo.text = users.tickets.ToString();
         Debug.Log("username is " + users.username);
-     }
-     
+    }
+
+    public async void CheckLogin() {
+        Users users = await fbMgr.GetUser(uuid);
+        fbMgr.UpdateLastLogin(uuid);
+    }
+
+
 }

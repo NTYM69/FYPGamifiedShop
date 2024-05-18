@@ -84,8 +84,40 @@ public class FirebaseManager : MonoBehaviour
 
     public void UpdateUserName(string uuid, string userName)
     {
-        Debug.Log("Where id: " + uuid); 
         dbUsersReference.Child(uuid).Child("username").SetValueAsync(userName);
+    }
+
+    public void UpdateLastLogin(string uuid) 
+    {
+        dbUsersReference.Child(uuid).Child("lastLogin").SetValueAsync(DateTime.Now.ToString("o"));
+    }
+
+    public void UpdateLastRedeemed(string uuid)
+    {
+        dbUsersReference.Child(uuid).Child("lastRedeemed").SetValueAsync(DateTime.Now.ToString("o"));
+    }
+
+    public async void AddDailyRedeemed(string uuid)
+    {
+        Users users = await GetUser(uuid);
+        int userDailyRedeemed = users.dailyRedeemed;
+        Debug.Log("user daily is :" + userDailyRedeemed);
+        userDailyRedeemed++;
+        Debug.Log("new user daily is :" + userDailyRedeemed);
+        await dbUsersReference.Child(uuid).Child("dailyRedeemed").SetValueAsync(userDailyRedeemed);
+    }
+
+    public async Task<int> CheckDailyRedeemed(string uuid)
+    {
+         Users users = await GetUser(uuid);
+         int userDailyRedeemed = users.dailyRedeemed;
+
+         return userDailyRedeemed;
+    }
+
+    public void ResetDailyRedeemed(string uuid)
+    {
+        dbUsersReference.Child(uuid).Child("dailyRedeemed").SetValueAsync(0);
     }
 }
 
