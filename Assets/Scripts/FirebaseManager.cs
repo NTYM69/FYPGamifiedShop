@@ -119,6 +119,29 @@ public class FirebaseManager : MonoBehaviour
     {
         dbUsersReference.Child(uuid).Child("dailyRedeemed").SetValueAsync(0);
     }
+
+    public async void addTickets(int amount)
+    {
+        Users users = await GetUser(uuid);
+        int dailyAmount = users.dailyEarned;
+        if (dailyAmount <= 100)
+        {
+            int amountToAdd = users.tickets + amount;
+            // int dailyAmount = users.tickets + amount;
+            await dbUsersReference.Child(uuid).Child("tickets").SetValueAsync(amountToAdd);
+            await dbUsersReference.Child(uuid).Child("dailyEarned").SetValueAsync(amountToAdd);
+        }
+    }
+
+    public void ResetDailyEarned(string uuid)
+    {
+        dbUsersReference.Child(uuid).Child("dailyEarned").SetValueAsync(0);
+    }
+
+    public void UpdateLastDailyReset(string uuid)
+    {
+        dbUsersReference.Child(uuid).Child("lastDailyReset").SetValueAsync(DateTime.Now.ToString("o"));
+    }
 }
 
    

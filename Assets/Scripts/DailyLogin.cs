@@ -15,6 +15,7 @@ public class DailyLogin : MonoBehaviour
     {
          uuid = fbMgr.GetCurrentUser().UserId;
          CheckDailyRewardAvailability();
+         CheckDailyEarned();
     }
 
     public async void CheckDailyRewardAvailability() 
@@ -55,5 +56,16 @@ public class DailyLogin : MonoBehaviour
         claimButton.interactable = false;
     }
 
+    public async void CheckDailyEarned()
+    {
+        Users users = await fbMgr.GetUser(uuid);
+        DateTime lastDailyResetDate = DateTime.Parse(users.lastDailyReset).Date;
+        DateTime currentDate = DateTime.UtcNow.Date;
 
+        if (users.lastDailyReset == null || lastDailyResetDate < currentDate)
+        {
+            fbMgr.ResetDailyEarned(uuid);
+            fbMgr.UpdateLastDailyReset(uuid);
+        }
+    }
 }

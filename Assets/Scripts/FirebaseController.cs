@@ -168,9 +168,10 @@ public class FirebaseController : MonoBehaviour
     }
     
 void InitializeGameData(string userID) {
-    Users newUser = new Users("NewUser", 0, 0, 0, 0, DateTime.Now, DateTime.MinValue, new List<string>());
+    Users newUser = new Users("NewUser", 0, 0, 0, 0, DateTime.Now, DateTime.MinValue, DateTime.MinValue, new List<string>());
     string json = JsonUtility.ToJson(newUser);
     newUser.lastRedeemed = DateTime.MinValue.ToString("o");
+    newUser.lastDailyReset = DateTime.MinValue.ToString("o");
     dbRef.Child("Users").Child(userID).SetRawJsonValueAsync(json);
 }
 

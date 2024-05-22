@@ -11,15 +11,18 @@ public class Users
     public int dailyRedeemed;
     public int dailyEarned;
     public string lastLogin;
+    public string lastDailyReset;
     public string lastRedeemed;
     public List<string> vouchers;
 
-   public Users(string username = "", int tickets = 0, int spinTickets = 0, int dailyRedeemed = 0, int dailyEarned = 0, DateTime? lastLogin = null, DateTime? lastRedeemed = null, List<string> vouchers = null){
+   public Users(string username = "", int tickets = 0, int spinTickets = 0, int dailyRedeemed = 0, int dailyEarned = 0, DateTime? lastLogin = null, DateTime? lastDailyReset = null, DateTime? lastRedeemed = null, List<string> vouchers = null)
+   {
         this.username = username;
         this.tickets = tickets;
         this.spinTickets = spinTickets;
         this.dailyRedeemed = dailyRedeemed;
         this.lastLogin = lastLogin?.ToString("o") ?? DateTime.MinValue.ToString("o"); // ISO 8601 format
+        this.lastDailyReset = lastDailyReset?.ToString("o");
         this.lastRedeemed = lastRedeemed?.ToString("o");
         this.vouchers = vouchers ?? new List<string>();
    }
