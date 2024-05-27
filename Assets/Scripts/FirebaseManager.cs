@@ -92,12 +92,12 @@ public class FirebaseManager : MonoBehaviour
         dbUsersReference.Child(uuid).Child("lastLogin").SetValueAsync(DateTime.Now.ToString("o"));
     }
 
-    public void UpdateLastRedeemed(string uuid)
+    public async Task UpdateLastRedeemed(string uuid)
     {
-        dbUsersReference.Child(uuid).Child("lastRedeemed").SetValueAsync(DateTime.Now.ToString("o"));
+        await dbUsersReference.Child(uuid).Child("lastRedeemed").SetValueAsync(DateTime.Now.ToString("o"));
     }
 
-    public async void AddDailyRedeemed(string uuid)
+    public async Task AddDailyRedeemed(string uuid)
     {
         Users users = await GetUser(uuid);
         int userDailyRedeemed = users.dailyRedeemed;
@@ -115,32 +115,34 @@ public class FirebaseManager : MonoBehaviour
          return userDailyRedeemed;
     }
 
-    public void ResetDailyRedeemed(string uuid)
+    public async Task ResetDailyRedeemed(string uuid)
     {
-        dbUsersReference.Child(uuid).Child("dailyRedeemed").SetValueAsync(0);
+        await dbUsersReference.Child(uuid).Child("dailyRedeemed").SetValueAsync(0);
     }
 
-    public async void addTickets(int amount)
+    public async Task addTickets(int amount)
     {
         Users users = await GetUser(uuid);
         int dailyAmount = users.dailyEarned;
+        Debug.Log("Amount retrieved: " + users.tickets);
         if (dailyAmount <= 100)
         {
             int amountToAdd = users.tickets + amount;
+            int updateDailyEarned = dailyAmount + amount;
             // int dailyAmount = users.tickets + amount;
             await dbUsersReference.Child(uuid).Child("tickets").SetValueAsync(amountToAdd);
-            await dbUsersReference.Child(uuid).Child("dailyEarned").SetValueAsync(amountToAdd);
+            await dbUsersReference.Child(uuid).Child("dailyEarned").SetValueAsync(updateDailyEarned);
         }
     }
 
-    public void ResetDailyEarned(string uuid)
+    public async Task ResetDailyEarned(string uuid)
     {
-        dbUsersReference.Child(uuid).Child("dailyEarned").SetValueAsync(0);
+        await dbUsersReference.Child(uuid).Child("dailyEarned").SetValueAsync(0);
     }
 
-    public void UpdateLastDailyReset(string uuid)
+    public async Task UpdateLastDailyReset(string uuid)
     {
-        dbUsersReference.Child(uuid).Child("lastDailyReset").SetValueAsync(DateTime.Now.ToString("o"));
+        await dbUsersReference.Child(uuid).Child("lastDailyReset").SetValueAsync(DateTime.Now.ToString("o"));
     }
 }
 

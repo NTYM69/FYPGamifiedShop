@@ -32,7 +32,6 @@ public class Player : MonoBehaviour
 
     private void HandleTouchInput()
     {
-        Debug.Log("1ST TOUCH");
         Touch touch = Input.GetTouch(0);
 
         Vector2 touchPos = Camera.main.ScreenToWorldPoint(touch.position);
@@ -45,7 +44,6 @@ public class Player : MonoBehaviour
 
             case TouchPhase.Moved:
                 rb.MovePosition(new Vector2(touchPos.x - deltaX, transform.position.y));
-                Debug.Log("MOVED");
                 break;
 
             case TouchPhase.Ended:
@@ -60,17 +58,14 @@ public class Player : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             deltaX = mousePos.x - transform.position.x;
-            Debug.Log("Mouse button down at: " + mousePos);
         }
         else if (Input.GetMouseButton(0))
         {
             rb.MovePosition(new Vector2(mousePos.x - deltaX, transform.position.y));
-            Debug.Log("Mouse moved to: " + mousePos);
         }
         else if (Input.GetMouseButtonUp(0))
         {
             rb.velocity = Vector2.zero;
-            Debug.Log("Mouse button up");
         }
     }
         // if (Input.GetMouseButton(0))
@@ -99,5 +94,11 @@ public class Player : MonoBehaviour
             gameEnded = true;
             gameMgr.SetGameEnded(gameEnded);
         }
+
+        // if(collision.gameObject.tag == "Watch")
+        // {
+        //     gameMgr.SlowObstacles();
+        //     Destroy(collision.gameObject);
+        // }
     }
 }

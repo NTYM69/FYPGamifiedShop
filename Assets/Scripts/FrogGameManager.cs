@@ -10,6 +10,8 @@ using System;
 public class FrogGameManager : MonoBehaviour
 {
     public GameObject rock;
+    public GameObject watch;
+    public GameObject piggyBank;
     public float maxX;
     public Transform spawnPoint;
     public float spawnRate;
@@ -21,6 +23,7 @@ public class FrogGameManager : MonoBehaviour
     public bool gameEnded = false;
     private float ticketWon;
     public FirebaseManager fbMgr;
+    public float currentFallSpeed;
 
     void Start()
     {
@@ -33,14 +36,11 @@ public class FrogGameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // if(Input.GetMouseButton(0) && !gameStarted)
-        // {
-        //     StartSpawning();
-        //     gameStarted = true;
-        // }
 
         if(gameStarted)
         {
+            currentFallSpeed = 5f;
+            rock.GetComponent<Rock>().UpdateFallSpeed(currentFallSpeed);
             StartSpawning();
             tutorialCanvas.SetActive(false);
             gameStarted = false;
@@ -52,6 +52,23 @@ public class FrogGameManager : MonoBehaviour
             HandleGameEnded();
             gameEnded = false;
         }
+
+        if (score == 20)
+        {
+            currentFallSpeed = 8f;
+            rock.GetComponent<Rock>().UpdateFallSpeed(currentFallSpeed);
+            CancelInvoke("SpawnBlock");
+            InvokeRepeating("SpawnBlock", 1f, spawnRate);
+        }
+
+        if (score == 50)
+        {
+            currentFallSpeed = 15f;
+            rock.GetComponent<Rock>().UpdateFallSpeed(currentFallSpeed);
+            spawnRate = 0.5f;
+            CancelInvoke("SpawnBlock");
+            InvokeRepeating("SpawnBlock", 1f, spawnRate);
+        }
     }
 
     public void StartGame()
@@ -61,8 +78,9 @@ public class FrogGameManager : MonoBehaviour
 
     private void StartSpawning() 
     {
-        InvokeRepeating("SpawnBlock", 0.5f, spawnRate);
-        InvokeRepeating("AddScore", 0.5f, 1f);
+        InvokeRepeating("SpawnBlock", 1f, spawnRate);
+        InvokeRepeating("AddScore", 0.1f, 1f);
+        InvokeRepeating("SpawnPowerups", 7.5f, 30f);
     }
 
     void SpawnBlock()
@@ -70,6 +88,25 @@ public class FrogGameManager : MonoBehaviour
         Vector3 spawnPos = spawnPoint.position;
         spawnPos.x = UnityEngine.Random.Range(-maxX, maxX);
         Instantiate(rock, spawnPos, Quaternion.identity);
+    }
+    
+    void SpawnPowerups()
+    {
+        int RandomPower = UnityEngine.Random.Range(0, 2);
+        Debug.Log("random : " + RandomPower);
+        if (RandomPower == 0)
+        {
+            Vector3 spawnPos = spawnPoint.position;
+            spawnPos.x = UnityEngine.Random.Range(-maxX, maxX);
+            Instantiate(watch, spawnPos, Quaternion.identity);
+        }
+        else
+        {
+            Vector3 spawnPos = spawnPoint.position;
+            spawnPos.x = UnityEngine.Random.Range(-maxX, maxX);
+            Instantiate(piggyBank, spawnPos, Quaternion.identity);
+        }
+        
     }
 
     void AddScore() 
@@ -101,21 +138,71 @@ public class FrogGameManager : MonoBehaviour
         gameEnded = state;
     }
 
-    public void HandleGameEnded()
+    public async void HandleGameEnded()
     {
         Time.timeScale = 0f;
         endGameOverlay.SetActive(true);
         endScoreText.text = score.ToString();
 
         ticketWon = score / 10;
+        Debug.Log("initial ticket won: " + ticketWon);
 
         int intTicketWon = (int)Math.Floor(ticketWon);
+        Debug.Log("Integer of ticket won: " + intTicketWon);
 
         ticketNo.text = "+" + intTicketWon.ToString();
 
-        fbMgr.addTickets(intTicketWon);
+        await fbMgr.addTickets(intTicketWon);
 
         Debug.Log("Game has ended");
+
+    }
+
+    public void SlowObstacles()
+    {
+        // currentFallSpeed = currentFallSpeed / 2;
+        // rock.GetComponent<Rock>().UpdateFallSpeed(currentFallSpeed);
+        StartCoroutine(SlowTime());
+    }
+
+    public void DoublePoints()
+    {
+        StartCoroutine(DoubleScore());
+    }
+
+    IEnumerator SlowTime()
+    {
+        // currentFallSpeed = currentFallSpeed / 2;
+        // rock.GetComponent<Rock>().UpdateFallSpeed(currentFallSpeed);
+        // spawnRate *= 2;
+        // CancelInvoke("SpawnBlock");
+        // InvokeRepeating("SpawnBlock", 0.5f, spawnRate);
+        
+        // yield return new WaitForSeconds(10f); // Wait for 10 seconds
+
+        // currentFallSpeed = currentFallSpeed * 2;
+        // rock.GetComponent<Rock>().UpdateFallSpeed(currentFallSpeed);
+        // spawnRate /= 2;
+        // CancelInvoke("SpawnBlock");
+        // InvokeRepeating("SpawnBlock", 0.5f, spawnRate);
+        
+        Time.timeScale = 0.5f;
+        CancelInvoke("AddScore");
+        InvokeRepeating("AddScore", 0.1f, 0.5f);
+        yield return new WaitForSeconds(5f);
+        Time.timeScale = 1f;
+        CancelInvoke("AddScore");
+        InvokeRepeating("AddScore", 0.1f, 1f);
+    }
+
+    IEnumerator DoubleScore()
+    {
+        CancelInvoke("AddScore");
+        InvokeRepeating("AddScore", 0.1f, 0.5f);
+
+        yield return new WaitForSeconds(10f);
+        CancelInvoke("AddScore");
+        InvokeRepeating("AddScore", 0.1f, 1f);
 
     }
 }
