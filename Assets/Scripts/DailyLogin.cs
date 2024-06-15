@@ -102,7 +102,7 @@ public class DailyLogin : MonoBehaviour
 
         await UpdateDailyRedeemedAndGreyOut();
         await fbMgr.addTickets(dailyRedeemed);
-        // await mmMgr.DisplayMainMenuInfo(uuid);
+        mmMgr.DisplayMainMenuInfo(uuid);
         claimButton.interactable = false;
     }
 

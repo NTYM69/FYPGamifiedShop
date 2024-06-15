@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PiggyBank : MonoBehaviour
+public class FortuneCat : MonoBehaviour
 {
     public float fallSpeed;
     public FrogGameManager gameMgr;

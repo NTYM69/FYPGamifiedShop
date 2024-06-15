@@ -144,6 +144,41 @@ public class FirebaseManager : MonoBehaviour
     {
         await dbUsersReference.Child(uuid).Child("lastDailyReset").SetValueAsync(DateTime.Now.ToString("o"));
     }
+
+    public async Task PurchaseItem(string id, int cost)
+    {
+        Users users = await GetUser(uuid);
+        if(id == "spinthewheel")
+        {
+            int spinTicketsToAdd = users.spinTickets + 1;
+            await dbUsersReference.Child(uuid).Child("spinTickets").SetValueAsync(spinTicketsToAdd);
+        }
+        else
+        {
+            List<string> vouchersRetrieved = new List<string>();
+            vouchersRetrieved = users.vouchers;
+
+            foreach(var vouchers in vouchersRetrieved)
+            {
+                Debug.Log("Current vouchers: " + vouchers);
+            }
+
+            vouchersRetrieved.Add(id);
+            await dbUsersReference.Child(uuid).Child("vouchers").SetValueAsync(vouchersRetrieved);
+
+            foreach(var vouchers in vouchersRetrieved)
+            {
+                Debug.Log("Added vouchers: " + vouchers);
+            }
+        }
+
+        if (users.tickets >= cost)
+        {
+            int amountToDeduct = users.tickets - cost;
+            await dbUsersReference.Child(uuid).Child("tickets").SetValueAsync(amountToDeduct); 
+        }
+
+    }
 }
 
    

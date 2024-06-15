@@ -9,6 +9,7 @@ using Firebase.Auth;
 public class ButtonUI : MonoBehaviour
 {
     [SerializeField] GameObject dailyRewardCanvas;
+    [SerializeField] GameObject myVouchersCanvas;
 
     void Start() {
         dailyRewardCanvas.SetActive(false);
@@ -57,6 +58,15 @@ public class ButtonUI : MonoBehaviour
 
     public void CloseDailyLogin() {
         dailyRewardCanvas.SetActive(false);
+    }
+
+    public void openVouchers()
+    {
+        myVouchersCanvas.SetActive(true);
+    }
+    public void closeVouchers()
+    {
+        myVouchersCanvas.SetActive(false);
     }
 
 }

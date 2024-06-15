@@ -11,7 +11,7 @@ public class FrogGameManager : MonoBehaviour
 {
     public GameObject rock;
     public GameObject watch;
-    public GameObject piggyBank;
+    public GameObject fortuneCat;
     public float maxX;
     public Transform spawnPoint;
     public float spawnRate;
@@ -23,7 +23,7 @@ public class FrogGameManager : MonoBehaviour
     public bool gameEnded = false;
     private float ticketWon;
     public FirebaseManager fbMgr;
-    public float currentFallSpeed;
+    private float currentFallSpeed;
 
     void Start()
     {
@@ -104,7 +104,7 @@ public class FrogGameManager : MonoBehaviour
         {
             Vector3 spawnPos = spawnPoint.position;
             spawnPos.x = UnityEngine.Random.Range(-maxX, maxX);
-            Instantiate(piggyBank, spawnPos, Quaternion.identity);
+            Instantiate(fortuneCat, spawnPos, Quaternion.identity);
         }
         
     }
@@ -138,13 +138,24 @@ public class FrogGameManager : MonoBehaviour
         gameEnded = state;
     }
 
+    public float CalculateTickets(int score)
+    {
+        float maxTicket = 40f;
+        float k = 0.025f;
+
+        float tickets = maxTicket * (1 - Mathf.Exp(-k * score));
+        
+        return tickets; 
+    }
+
     public async void HandleGameEnded()
     {
         Time.timeScale = 0f;
         endGameOverlay.SetActive(true);
         endScoreText.text = score.ToString();
 
-        ticketWon = score / 10;
+        // ticketWon = score / 10;
+        ticketWon = CalculateTickets(score);
         Debug.Log("initial ticket won: " + ticketWon);
 
         int intTicketWon = (int)Math.Floor(ticketWon);
