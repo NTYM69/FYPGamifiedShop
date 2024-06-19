@@ -30,7 +30,7 @@ public class MainMenuManager : MonoBehaviour
 
     public async void CheckLogin() {
         Users users = await fbMgr.GetUser(uuid);
-        fbMgr.UpdateLastLogin(uuid);
+        await fbMgr.UpdateLastLogin(uuid);
     }
 
     public async void LoadVoucherPanels()

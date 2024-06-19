@@ -18,7 +18,6 @@ public class ShopManager : MonoBehaviour
     void Start() 
     {
         uuid = fbMgr.GetCurrentUser().UserId;
-        // users = fbMgr.GetUser(uuid);
         DisplayTicketNo(uuid);
         for (int i = 0; i < shopItemsSO.Length; i++)
         {
@@ -58,7 +57,7 @@ public class ShopManager : MonoBehaviour
 
     public void CheckPurchasable()
     {
-         if (users == null)
+        if (users == null)
         {
             Debug.LogWarning("Users object is null. Skipping CheckPurchasable.");
             return;

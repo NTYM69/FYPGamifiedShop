@@ -26,6 +26,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Game1.unity
     guid: e9239c7f3fbf82945b23cc409b20fbe7
+  - enabled: 1
+    path: Assets/Scenes/SpinTheWheelPage.unity
+    guid: 5a9eb27628bae60489180aa3dcf0d9e6
   m_configObjects:
     com.unity.adaptiveperformance.google.android.provider_settings: {fileID: 11400000, guid: d3d43109bad190b44af562de7f2a0c3c, type: 2}
     com.unity.adaptiveperformance.loader_settings: {fileID: 11400000, guid: 115a8a61053454b4aba0abf3009ceca9, type: 2}

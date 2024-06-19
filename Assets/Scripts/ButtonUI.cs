@@ -69,4 +69,9 @@ public class ButtonUI : MonoBehaviour
         myVouchersCanvas.SetActive(false);
     }
 
+    public void GoSpinTheWheel()
+    {
+        SceneManager.LoadScene(7);
+    }
+
 }

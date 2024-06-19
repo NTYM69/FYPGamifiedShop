@@ -82,14 +82,14 @@ public class FirebaseManager : MonoBehaviour
         return users;
     }
 
-    public void UpdateUserName(string uuid, string userName)
+    public async Task UpdateUserName(string uuid, string userName)
     {
-        dbUsersReference.Child(uuid).Child("username").SetValueAsync(userName);
+        await dbUsersReference.Child(uuid).Child("username").SetValueAsync(userName);
     }
 
-    public void UpdateLastLogin(string uuid) 
+    public async Task UpdateLastLogin(string uuid) 
     {
-        dbUsersReference.Child(uuid).Child("lastLogin").SetValueAsync(DateTime.Now.ToString("o"));
+        await dbUsersReference.Child(uuid).Child("lastLogin").SetValueAsync(DateTime.Now.ToString("o"));
     }
 
     public async Task UpdateLastRedeemed(string uuid)
@@ -120,7 +120,7 @@ public class FirebaseManager : MonoBehaviour
         await dbUsersReference.Child(uuid).Child("dailyRedeemed").SetValueAsync(0);
     }
 
-    public async Task addTickets(int amount)
+    public async Task AddTickets(int amount)
     {
         Users users = await GetUser(uuid);
         int dailyAmount = users.dailyEarned;
@@ -178,6 +178,20 @@ public class FirebaseManager : MonoBehaviour
             await dbUsersReference.Child(uuid).Child("tickets").SetValueAsync(amountToDeduct); 
         }
 
+    }
+    public async Task UseSpinTicket()
+    {
+        Users users = await GetUser(uuid);
+        int updatedSpinTickets = users.spinTickets - 1;
+        await dbUsersReference.Child(uuid).Child("spinTickets").SetValueAsync(updatedSpinTickets);
+    }
+
+    public async Task AddTicketsWithoutDaily(int amount)
+    {
+        Users users = await GetUser(uuid);
+        Debug.Log("Amount retrieved: " + users.tickets);
+        int amountToAdd = users.tickets + amount;
+        await dbUsersReference.Child(uuid).Child("tickets").SetValueAsync(amountToAdd);
     }
 }
 

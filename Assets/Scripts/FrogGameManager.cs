@@ -163,7 +163,7 @@ public class FrogGameManager : MonoBehaviour
 
         ticketNo.text = "+" + intTicketWon.ToString();
 
-        await fbMgr.addTickets(intTicketWon);
+        await fbMgr.AddTickets(intTicketWon);
 
         Debug.Log("Game has ended");
 

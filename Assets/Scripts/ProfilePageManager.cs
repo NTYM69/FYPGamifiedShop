@@ -42,7 +42,7 @@ public class ProfilePageManager : MonoBehaviour
 
         Users users = await fbMgr.GetUser(uuid);
         currentUserName = editUserName.text;
-        fbMgr.UpdateUserName(uuid, editUserName.text);
+        await fbMgr.UpdateUserName(uuid, editUserName.text);
         StartCoroutine(ChangeTextRoutine());
 
     }

@@ -8,6 +8,5 @@ public class ShopTemplate : MonoBehaviour
 {
     public TMP_Text itemTitle;
     public TMP_Text itemCost;
-
     public Image itemImage;
 }
