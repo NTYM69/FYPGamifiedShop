@@ -15,12 +15,11 @@ public class FirebaseManager : MonoBehaviour
     DatabaseReference dbRef;
     DatabaseReference dbUsersReference;
 
-    private string email;
-
     private string uuid;
 
     void Awake()
     {
+        // Initialize authentication and realtime database
         auth = FirebaseAuth.DefaultInstance;
         dbRef = FirebaseDatabase.DefaultInstance.RootReference;
         dbUsersReference = FirebaseDatabase.DefaultInstance.GetReference("Users");
@@ -28,25 +27,28 @@ public class FirebaseManager : MonoBehaviour
 
     void Start()
     {
+        // Obtain uuid of the user
         uuid = GetCurrentUser().UserId;
     }
 
-
-    public FirebaseUser GetCurrentUser()
+    public FirebaseUser GetCurrentUser() // Obtain uuid of the user
     {
         return auth.CurrentUser;
     }
 
+    // Send password reset email to user
     public async Task SendPasswordResetEmail(string email)
     {
+        // If no email is provided (user not logged in or did not enter an email during login page)
         if (string.IsNullOrEmpty(email))
         {
             Debug.LogError("No email provided for password reset.");
             return;
         }
+        
         try
         {
-            await auth.SendPasswordResetEmailAsync(email);
+            await auth.SendPasswordResetEmailAsync(email); // Send password reset email provided by Firebase
             Debug.Log("Password reset email sent successfully.");
         }
         catch (System.Exception ex)
@@ -55,23 +57,24 @@ public class FirebaseManager : MonoBehaviour
         }
     }
 
+    // Obtain the user's data 
     public async Task<Users> GetUser(string uuid)
     {
-        Query q = dbUsersReference.Child(uuid).LimitToFirst(1);
-        Users users = null;
+        Users users = null; // intialize empty Users object
 
+        // Search the database
         await dbUsersReference.GetValueAsync().ContinueWithOnMainThread(task =>
         {
-            if (task.IsCanceled || task.IsFaulted)
+            if (task.IsCanceled || task.IsFaulted) // If there is error when retrieving user's data
             {
                 Debug.LogError("Sorry, there was an error retrieving player stats : ERROR " + task.Exception);
             }
             else if (task.IsCompleted)
             {
-                DataSnapshot ds = task.Result;
-                if (ds.Child(uuid).Exists)
+                DataSnapshot ds = task.Result; 
+                if (ds.Child(uuid).Exists) // If the user of uuid exists in the database
                 {
-                    users = JsonUtility.FromJson<Users>(ds.Child(uuid).GetRawJsonValue());
+                    users = JsonUtility.FromJson<Users>(ds.Child(uuid).GetRawJsonValue()); // Assign the data from database to the users
 
                     Debug.Log("ds... : " + ds.GetRawJsonValue());
                     Debug.Log("Users values.." + users.UsersToJson());
@@ -82,103 +85,110 @@ public class FirebaseManager : MonoBehaviour
         return users;
     }
 
-    public async Task UpdateUserName(string uuid, string userName)
+    // Update username data for user
+    public async Task UpdateUserName(string userName)
     {
         await dbUsersReference.Child(uuid).Child("username").SetValueAsync(userName);
     }
 
-    public async Task UpdateLastLogin(string uuid) 
+    // Sign out the user provided by Firebase Authentication
+    public void SignOutUser()
     {
-        await dbUsersReference.Child(uuid).Child("lastLogin").SetValueAsync(DateTime.Now.ToString("o"));
+        auth.SignOut();
     }
 
-    public async Task UpdateLastRedeemed(string uuid)
+    // Update the last login time of the user
+    public async Task UpdateLastLogin() 
+    {
+        await dbUsersReference.Child(uuid).Child("lastLogin").SetValueAsync(DateTime.Now.ToString("o")); // "o" for round-trip format of date time
+    }
+
+    // Update the last daily reward redemption time of the user
+    public async Task UpdateLastRedeemed()
     {
         await dbUsersReference.Child(uuid).Child("lastRedeemed").SetValueAsync(DateTime.Now.ToString("o"));
     }
 
-    public async Task AddDailyRedeemed(string uuid)
+    // Increments / adds the user's daily reward redemption amount by 1 
+    public async Task AddDailyRedeemed()
     {
         Users users = await GetUser(uuid);
         int userDailyRedeemed = users.dailyRedeemed;
-        Debug.Log("user daily is :" + userDailyRedeemed);
         userDailyRedeemed++;
-        Debug.Log("new user daily is :" + userDailyRedeemed);
         await dbUsersReference.Child(uuid).Child("dailyRedeemed").SetValueAsync(userDailyRedeemed);
     }
 
-    public async Task<int> CheckDailyRedeemed(string uuid)
-    {
-         Users users = await GetUser(uuid);
-         int userDailyRedeemed = users.dailyRedeemed;
-
-         return userDailyRedeemed;
-    }
-
-    public async Task ResetDailyRedeemed(string uuid)
+    // Resets the user's daily reward redemption amount to 0
+    public async Task ResetDailyRedeemed()
     {
         await dbUsersReference.Child(uuid).Child("dailyRedeemed").SetValueAsync(0);
     }
 
+    // Adds the tickets and updates the daily ticket earnings 
     public async Task AddTickets(int amount)
     {
         Users users = await GetUser(uuid);
         int dailyAmount = users.dailyEarned;
-        Debug.Log("Amount retrieved: " + users.tickets);
+        // If the user has not passed its daily ticket earning limit of 100
         if (dailyAmount <= 100)
         {
-            int amountToAdd = users.tickets + amount;
-            int updateDailyEarned = dailyAmount + amount;
-            // int dailyAmount = users.tickets + amount;
+            int amountToAdd = users.tickets + amount; // Updates the total tickets of user
+            int updateDailyEarned = dailyAmount + amount; // Updates the daily ticket earnings of users
             await dbUsersReference.Child(uuid).Child("tickets").SetValueAsync(amountToAdd);
             await dbUsersReference.Child(uuid).Child("dailyEarned").SetValueAsync(updateDailyEarned);
         }
     }
 
-    public async Task ResetDailyEarned(string uuid)
+    // Resets the user's daily ticket earning limit to 0
+    public async Task ResetDailyEarned()
     {
         await dbUsersReference.Child(uuid).Child("dailyEarned").SetValueAsync(0);
     }
 
-    public async Task UpdateLastDailyReset(string uuid)
+    // Updates the last daily ticket earning time of the user
+    public async Task UpdateLastDailyReset()
     {
         await dbUsersReference.Child(uuid).Child("lastDailyReset").SetValueAsync(DateTime.Now.ToString("o"));
     }
 
+    // appends the voucher into the users voucher list and remove the tickets of the user
     public async Task PurchaseItem(string id, int cost)
     {
         Users users = await GetUser(uuid);
-        if(id == "spinthewheel")
+        if(id == "spinthewheel") // If the user bought a spin the wheel ticket
         {
             int spinTicketsToAdd = users.spinTickets + 1;
-            await dbUsersReference.Child(uuid).Child("spinTickets").SetValueAsync(spinTicketsToAdd);
+            await dbUsersReference.Child(uuid).Child("spinTickets").SetValueAsync(spinTicketsToAdd); // Increment / add the spin the wheel chances of the user by 1
         }
         else
         {
-            List<string> vouchersRetrieved = new List<string>();
-            vouchersRetrieved = users.vouchers;
+            List<string> vouchersRetrieved = new List<string>(); 
+            vouchersRetrieved = users.vouchers; // Retrieve the list of vouchers that the user has
 
-            foreach(var vouchers in vouchersRetrieved)
+            foreach(var vouchers in vouchersRetrieved) // displays the vouchers of the user
             {
                 Debug.Log("Current vouchers: " + vouchers);
             }
 
-            vouchersRetrieved.Add(id);
-            await dbUsersReference.Child(uuid).Child("vouchers").SetValueAsync(vouchersRetrieved);
+            vouchersRetrieved.Add(id); // adds the voucher's id to the list
+            await dbUsersReference.Child(uuid).Child("vouchers").SetValueAsync(vouchersRetrieved); // Updates the user's voucher list with the updated list
 
             foreach(var vouchers in vouchersRetrieved)
             {
-                Debug.Log("Added vouchers: " + vouchers);
+                Debug.Log("Added vouchers: " + vouchers); // Displays the vouchers of the user after the update
             }
         }
-
+        
+        // If the user's ticket is more than the cost
         if (users.tickets >= cost)
         {
             int amountToDeduct = users.tickets - cost;
-            await dbUsersReference.Child(uuid).Child("tickets").SetValueAsync(amountToDeduct); 
+            await dbUsersReference.Child(uuid).Child("tickets").SetValueAsync(amountToDeduct); // Update the user's ticket after the deduction
         }
 
     }
+
+    // When the user uses a spin the wheel ticket
     public async Task UseSpinTicket()
     {
         Users users = await GetUser(uuid);
@@ -186,12 +196,37 @@ public class FirebaseManager : MonoBehaviour
         await dbUsersReference.Child(uuid).Child("spinTickets").SetValueAsync(updatedSpinTickets);
     }
 
+    // When user earns ticket without affecting daily ticket earning limit (spin the wheel / daily rewards)
     public async Task AddTicketsWithoutDaily(int amount)
     {
         Users users = await GetUser(uuid);
-        Debug.Log("Amount retrieved: " + users.tickets);
         int amountToAdd = users.tickets + amount;
-        await dbUsersReference.Child(uuid).Child("tickets").SetValueAsync(amountToAdd);
+        await dbUsersReference.Child(uuid).Child("tickets").SetValueAsync(amountToAdd); 
+    }
+
+    // Updates the last Nike trivia date of the user 
+    public async Task UpdateLastNikeTrivia()
+    {
+        await dbUsersReference.Child(uuid).Child("lastNikeTrivia").SetValueAsync(DateTime.Now.ToString("o"));
+    }
+
+    // Check if the voucherlist has an empty slot and removes that index
+    public async Task CheckIfVoucherEmpty()
+    {
+        Users users = await GetUser(uuid);
+
+        List<string> newVouchers = new List<string>(); // Empty list to store new vouchers
+        List<string> currentVouchers = new List<string>(); // Empty list to store old vouchers
+        currentVouchers = users.vouchers; // Obtain user's old vouchers
+
+        foreach (var voucher in currentVouchers)
+        {
+            if (!string.IsNullOrEmpty(voucher)) // Ignores voucher if they are null or empty
+            {
+                newVouchers.Add(voucher);
+            }
+        }
+        await dbUsersReference.Child(uuid).Child("vouchers").SetValueAsync(newVouchers); // Update the user's vouchers list with new vouchers
     }
 }
 

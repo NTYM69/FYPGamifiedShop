@@ -9,10 +9,9 @@ public class DailyTicket : MonoBehaviour
     public FirebaseManager fbMgr;
     public int day;
 
-    // Start is called before the first frame update
     void Start()
     {
-        ticketAmount.text = day.ToString();
-        dayNo.text = day.ToString();
+        ticketAmount.text = (day*5).ToString(); // display ticket amount
+        dayNo.text = day.ToString(); // display day
     }   
 }

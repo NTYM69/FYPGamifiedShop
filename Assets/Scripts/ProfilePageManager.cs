@@ -2,48 +2,39 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-// using System.Threading.Tasks;
-// // using Firebase;
-// // using Firebase.Auth;
-// using System;
+using UnityEngine.SceneManagement;
 
 public class ProfilePageManager : MonoBehaviour
 {
     public FirebaseManager fbMgr;
     [SerializeField] private TMP_InputField editUserName;
     [SerializeField] private TMP_Text usernameTextNoti, changePassTextNoti;
-    private string currentUserName;
     private string uuid;
     private float duration = 5f;
     private string email;
     
-    //initialize uuid and email 
     void Start() 
     {
+        // Obtain uuid and email
         uuid = fbMgr.GetCurrentUser().UserId;
         email = fbMgr.GetCurrentUser().Email;
-        // Debug.Log("user's email : " + email);
 
-        DisplayUserName(uuid);
+        DisplayUserName();
     }
 
-    // Method that will display user's username on input field's placeholder
-    private async void DisplayUserName(string uuid)
+    // Display user's username in the input field
+    private async void DisplayUserName()
     {
         Users users = await fbMgr.GetUser(uuid);
-        currentUserName = users.username;
-        editUserName.text = currentUserName;
-        Debug.Log(currentUserName);
+        editUserName.text = users.username;
     }
 
-    //Method to update the user's username
+    // Update the user's username
     public async void UpdateUserName()
     {
-
         Users users = await fbMgr.GetUser(uuid);
-        currentUserName = editUserName.text;
-        await fbMgr.UpdateUserName(uuid, editUserName.text);
-        StartCoroutine(ChangeTextRoutine());
+        await fbMgr.UpdateUserName(editUserName.text); // Updates username in database
+        StartCoroutine(ChangeTextRoutine()); 
 
     }
 
@@ -54,20 +45,26 @@ public class ProfilePageManager : MonoBehaviour
         usernameTextNoti.text = "";
     }
 
-    public async void SendPasswordChangeEmail() //Method to send an email to user's email for password change
+    public async void SendPasswordChangeEmail() // Send an email to user's email for password change
     {
          if (fbMgr.GetCurrentUser() != null) 
         {
-            await fbMgr.SendPasswordResetEmail(email);
+            await fbMgr.SendPasswordResetEmail(email); // Send password reset email provided by Firebase
             StartCoroutine(ChangePasswordRoutine());
         }
-
     }
 
     IEnumerator ChangePasswordRoutine() { //Enumerator to display notification text for 5s
         changePassTextNoti.text = "A password reset link has been sent to your email address. Please check your inbox and follow the instructions to change your password.";
         yield return new WaitForSeconds(duration);
         changePassTextNoti.text = "";
+    }
+
+    public void signOutButton() 
+    {
+        // Signs out user and navigate them to landing page
+        fbMgr.SignOutUser();
+        SceneManager.LoadScene(0);
     }
 
 }

@@ -418,8 +418,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 582875565}
-        m_TargetAssemblyTypeName: ButtonUI, Assembly-CSharp
+      - m_Target: {fileID: 26706668}
+        m_TargetAssemblyTypeName: ProfilePageManager, Assembly-CSharp
         m_MethodName: signOutButton
         m_Mode: 1
         m_Arguments:
@@ -764,6 +764,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dailyRewardCanvas: {fileID: 0}
+  myVouchersCanvas: {fileID: 0}
 --- !u!4 &582875566
 Transform:
   m_ObjectHideFlags: 0
